@@ -23,10 +23,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('guru', GuruController::class);
 
     // Kelas Management
-    Route::resource('kelas', KelasController::class);
-    Route::post('kelas/{kela}/siswa', [KelasController::class, 'addSiswa'])->name('kelas.siswa.add');
-    Route::put('kelas/{kela}/siswa/{siswa}', [KelasController::class, 'updateSiswa'])->name('kelas.siswa.update');
-    Route::delete('kelas/{kela}/siswa/{siswa}', [KelasController::class, 'destroySiswa'])->name('kelas.siswa.destroy');
+    Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
+    Route::post('kelas/{kelas}/siswa', [KelasController::class, 'addSiswa'])->name('kelas.siswa.add');
+    Route::put('kelas/{kelas}/siswa/{siswa}', [KelasController::class, 'updateSiswa'])->name('kelas.siswa.update');
+    Route::delete('kelas/{kelas}/siswa/{siswa}', [KelasController::class, 'destroySiswa'])->name('kelas.siswa.destroy');
 
     // Mata Pelajaran
     Route::resource('mapel', MataPelajaranController::class);

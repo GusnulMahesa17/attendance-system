@@ -35,18 +35,18 @@ class KelasController extends Controller
             ->with('success', 'Data kelas berhasil ditambahkan');
     }
 
-    public function show(Kelas $kela)
+    public function show(Kelas $kelas)
     {
-        $kela->load('siswas');
-        return view('admin.kelas.show', compact('kela'));
+        $kelas->load('siswas');
+        return view('admin.kelas.show', compact('kelas'));
     }
 
-    public function edit(Kelas $kela)
+    public function edit(Kelas $kelas)
     {
-        return view('admin.kelas.edit', compact('kela'));
+        return view('admin.kelas.edit', compact('kelas'));
     }
 
-    public function update(Request $request, Kelas $kela)
+    public function update(Request $request, Kelas $kelas)
     {
         $validated = $request->validate([
             'nama_kelas' => 'required|string|max:255',
@@ -55,21 +55,21 @@ class KelasController extends Controller
             'tahun_ajaran' => 'required|digits:4'
         ]);
 
-        $kela->update($validated);
+        $kelas->update($validated);
 
         return redirect()->route('admin.kelas.index')
             ->with('success', 'Data kelas berhasil diperbarui');
     }
 
-    public function destroy(Kelas $kela)
+    public function destroy(Kelas $kelas)
     {
-        $kela->delete();
+        $kelas->delete();
         return redirect()->route('admin.kelas.index')
             ->with('success', 'Data kelas berhasil dihapus');
     }
 
     // Manage siswa dalam kelas
-    public function addSiswa(Request $request, Kelas $kela)
+    public function addSiswa(Request $request, Kelas $kelas)
     {
         $validated = $request->validate([
             'kelas_id' => 'exists:kelas,id',
@@ -82,14 +82,14 @@ class KelasController extends Controller
             'phone' => 'nullable|string'
         ]);
 
-        $validated['kelas_id'] = $kela->id;
+        $validated['kelas_id'] = $kelas->id;
         Siswa::create($validated);
 
-        return redirect()->route('admin.kelas.show', $kela)
+        return redirect()->route('admin.kelas.show', $kelas)
             ->with('success', 'Siswa berhasil ditambahkan');
     }
 
-    public function updateSiswa(Request $request, Kelas $kela, Siswa $siswa)
+    public function updateSiswa(Request $request, Kelas $kelas, Siswa $siswa)
     {
         $validated = $request->validate([
             'nis' => 'required|unique:siswas,nis,' . $siswa->id,
@@ -103,14 +103,14 @@ class KelasController extends Controller
 
         $siswa->update($validated);
 
-        return redirect()->route('admin.kelas.show', $kela)
+        return redirect()->route('admin.kelas.show', $kelas)
             ->with('success', 'Data siswa berhasil diperbarui');
     }
 
-    public function destroySiswa(Kelas $kela, Siswa $siswa)
+    public function destroySiswa(Kelas $kelas, Siswa $siswa)
     {
         $siswa->delete();
-        return redirect()->route('admin.kelas.show', $kela)
+        return redirect()->route('admin.kelas.show', $kelas)
             ->with('success', 'Siswa berhasil dihapus');
     }
 }

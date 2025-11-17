@@ -3,8 +3,8 @@
 @section('content')
 <div class="py-4">
     <div class="mb-4">
-        <h2>Detail Kelas: {{ $kela->nama_kelas }}</h2>
-        <p class="text-muted">Tingkat {{ $kela->tingkat }} • {{ $kela->jurusan }} • TA {{ $kela->tahun_ajaran }}</p>
+        <h2>Detail Kelas: {{ $kelas->nama_kelas }}</h2>
+        <p class="text-muted">Tingkat {{ $kelas->tingkat }} • {{ $kelas->jurusan }} • TA {{ $kelas->tahun_ajaran }}</p>
     </div>
 
     <div class="card mb-4">
@@ -27,7 +27,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($kela->siswas as $siswa)
+                    @forelse($kelas->siswas as $siswa)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $siswa->nis }}</td>
@@ -39,7 +39,7 @@
                                     onclick="editSiswa({{ $siswa }})">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <form action="{{ route('admin.kelas.siswa.destroy', [$kela, $siswa]) }}" 
+                            <form action="{{ route('admin.kelas.siswa.destroy', [$kelas, $siswa]) }}" 
                                   method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
@@ -67,7 +67,7 @@
 <div class="modal fade" id="addSiswaModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="{{ route('admin.kelas.siswa.add', $kela) }}" method="POST">
+            <form action="{{ route('admin.kelas.siswa.add', ['kelas'=>$kelas->id]) }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Siswa</h5>
@@ -177,7 +177,7 @@
 <script>
 function editSiswa(siswa) {
     document.getElementById('editSiswaForm').action = 
-        `/admin/kelas/{{ $kela->id }}/siswa/${siswa.id}`;
+        `/admin/kelas/{{ $kelas->id }}/siswa/${siswa.id}`;
     document.getElementById('edit_nis').value = siswa.nis;
     document.getElementById('edit_nama').value = siswa.nama;
     document.getElementById('edit_jk').value = siswa.jenis_kelamin;
