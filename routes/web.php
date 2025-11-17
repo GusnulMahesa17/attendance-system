@@ -1,0 +1,55 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\GuruController;
+use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\MataPelajaranController;
+use App\Http\Controllers\Guru\AbsensiController;
+
+Auth::routes();
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
+
+// Admin Routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Guru Management
+    Route::resource('guru', GuruController::class);
+
+    // Kelas Management
+    Route::resource('kelas', KelasController::class);
+    Route::post('kelas/{kela}/siswa', [KelasController::class, 'addSiswa'])->name('kelas.siswa.add');
+    Route::put('kelas/{kela}/siswa/{siswa}', [KelasController::class, 'updateSiswa'])->name('kelas.siswa.update');
+    Route::delete('kelas/{kela}/siswa/{siswa}', [KelasController::class, 'destroySiswa'])->name('kelas.siswa.destroy');
+
+    // Mata Pelajaran
+    Route::resource('mapel', MataPelajaranController::class);
+
+
+    // Jadwal Management
+    Route::resource('jadwal', \App\Http\Controllers\Admin\JadwalController::class);
+    Route::get('jadwal/kelas/{kelas}', [\App\Http\Controllers\Admin\JadwalController::class, 'byKelas'])
+        ->name('jadwal.by-kelas');
+});
+
+// Guru Routes
+Route::middleware(['auth'])->prefix('guru')->name('guru.')->group(function () {
+
+    // Absensi
+    Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+    Route::get('absensi/jadwal/{jadwal}/pertemuan/create', [AbsensiController::class, 'createPertemuan'])->name('absensi.pertemuan.create');
+    Route::post('absensi/jadwal/{jadwal}/pertemuan', [AbsensiController::class, 'storePertemuan'])->name('absensi.pertemuan.store');
+    Route::get('absensi/pertemuan/{pertemuan}', [AbsensiController::class, 'inputAbsensi'])->name('absensi.input');
+    Route::put('absensi/pertemuan/{pertemuan}', [AbsensiController::class, 'updateAbsensi'])->name('absensi.update');
+
+    // Laporan
+    Route::get('laporan/harian', [AbsensiController::class, 'laporanHarian'])->name('laporan.harian');
+    Route::get('laporan/bulanan', [AbsensiController::class, 'laporanBulanan'])->name('laporan.bulanan');
+    Route::get('laporan/semester', [AbsensiController::class, 'laporanSemester'])->name('laporan.semester');
+});
