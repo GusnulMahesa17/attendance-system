@@ -27,10 +27,6 @@ class MataPelajaranController extends Controller
             'kode_mapel' => 'required|unique:mata_pelajarans,kode_mapel',
             'nama_mapel' => 'required|string|max:255',
             'guru_id' => 'nullable|exists:users,id',
-            'durasi_menit' => 'required|integer|min:30',
-            'hari' => 'nullable|string',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i'
         ]);
 
         MataPelajaran::create($validated);
@@ -51,10 +47,6 @@ class MataPelajaranController extends Controller
             'kode_mapel' => 'required|unique:mata_pelajarans,kode_mapel,' . $mapel->id,
             'nama_mapel' => 'required|string|max:255',
             'guru_id' => 'nullable|exists:users,id',
-            'durasi_menit' => 'required|integer|min:30',
-            'hari' => 'nullable|string',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i'
         ]);
 
         $mapel->update($validated);

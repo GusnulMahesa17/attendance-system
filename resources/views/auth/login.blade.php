@@ -1,9 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+
+
+<div class="container-fluid position-fixed top-50 start-50 translate-middle d-flex justify-content-center z-3 w-100 px-3">
+    <div class="row justify-content-center w-100 mb-4">
+    <div class="text-center ">
+        <img src="{{ asset('adzikra.jpg') }}" class="rounded" alt="">
+    </div>
+    <h2 class="text-center mb-3 mt-3">Sistem Manajemen Absensi Siswa</h2>
+        <div class="col-md-6 col-lg-5">
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>
 
@@ -12,10 +18,13 @@
                         @csrf
 
                         <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+                            <label for="email" class="col-md-4 col-form-label text-md-end text-start">
+                                {{ __('Email Address') }}
+                            </label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
+                                       name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -26,10 +35,14 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
+                            <label for="password" class="col-md-4 col-form-label text-md-end text-start">
+                                {{ __('Password') }}
+                            </label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                <input id="password" type="password"
+                                       class="form-control @error('password') is-invalid @enderror"
+                                       name="password" required autocomplete="current-password">
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">

@@ -51,11 +51,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode_mapel')->unique();
             $table->string('nama_mapel');
-            $table->foreignId('guru_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->integer('durasi_menit')->default(90);
-            $table->string('hari')->nullable();
-            $table->time('jam_mulai')->nullable();
-            $table->time('jam_selesai')->nullable();
+            $table->foreignId('guru_id')->nullable()->constrained('users')->onDelete('set null');           
             $table->timestamps();
         });
 
@@ -69,6 +65,8 @@ return new class extends Migration
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->timestamps();
+            $table->unique(['hari', 'jam_mulai', 'guru_id'], 'jadwal_guru_unique');
+            $table->unique(['hari', 'jam_mulai', 'kelas_id'], 'jadwal_kelas_unique');
         });
 
         // Tabel pertemuan
