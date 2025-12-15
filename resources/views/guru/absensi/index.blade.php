@@ -8,7 +8,7 @@
         @foreach($jadwals as $jadwal)
         <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
-                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-header bg-info">
                     <h5 class="text-white mb-0">{{ $jadwal->mataPelajaran->nama_mapel }}</h5>
                 </div>
                 <div class="card-body">
