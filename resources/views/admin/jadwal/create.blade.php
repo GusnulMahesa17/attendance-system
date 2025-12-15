@@ -52,7 +52,7 @@
                                 <input type="text" id="guru_nama" class="form-control" readonly>
                             </div>
 
-                            <input type="hidden" name="guru_id" id="guru_id" value="{{ old('guru_id') }}">
+                            <input type="hidden" name="guru_id" id="guru_id">
 
                             <div class="row">
                                 <div class="col-md-4 mb-3">
@@ -117,6 +117,7 @@
         </div>
     </div>
 
+    <!-- Javascript to sync data-guru-id and data-guru-nama on jadwal mapel -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const mapelSelect = document.getElementById('mata_pelajaran');

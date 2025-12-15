@@ -9,9 +9,20 @@ use Illuminate\Http\Request;
 
 class MataPelajaranController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $mapels = MataPelajaran::with('guru')->paginate(10);
+        $query = MataPelajaran::query();
+
+        if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('nama_mapel', 'like', "%{$search}%")
+              ->orWhere('kode_mapel', 'like', "%{$search}%");
+        });
+    }
+        
+    $mapels = $query->paginate(10)->withQueryString();
         return view('admin.mapel.index', compact('mapels'));
     }
 

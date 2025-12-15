@@ -50,13 +50,13 @@
                     @enderror
                 </div>
 
-                <!-- <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" value="{{ old('password', $guru->password) }}" required>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div> -->
+                </div>
 
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Simpan</button>

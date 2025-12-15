@@ -20,17 +20,6 @@
                         <input type="text" name="search" class="form-control" placeholder="Cari nama atau kode mapel..."
                             value="{{ request('search') }}">
                     </div>
-                    <div class="col-md-3">
-                        <select name="hari" class="form-select">
-                            <option value="">-- Semua Hari --</option>
-                            <option value="Senin" {{ request('hari') == 'Senin' ? 'selected' : '' }}>Senin</option>
-                            <option value="Selasa" {{ request('hari') == 'Selasa' ? 'selected' : '' }}>Selasa</option>
-                            <option value="Rabu" {{ request('hari') == 'Rabu' ? 'selected' : '' }}>Rabu</option>
-                            <option value="Kamis" {{ request('hari') == 'Kamis' ? 'selected' : '' }}>Kamis</option>
-                            <option value="Jumat" {{ request('hari') == 'Jumat' ? 'selected' : '' }}>Jumat</option>
-                            <option value="Sabtu" {{ request('hari') == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
-                        </select>
-                    </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-secondary w-100">
                             <i class="bi bi-search"></i> Filter
@@ -81,7 +70,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('admin.mapel.edit', $mapel) }}" class="btn btn-warning"
+                                            <a href="{{ route('admin.mapel.edit', $mapel) }}" class="btn btn-warning" 
                                                 title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
