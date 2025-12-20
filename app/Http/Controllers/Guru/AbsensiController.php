@@ -8,6 +8,7 @@ use App\Models\Pertemuan;
 use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AbsensiController extends Controller
 {
@@ -16,7 +17,7 @@ class AbsensiController extends Controller
         $jadwals = Jadwal::with(['kelas', 'mataPelajaran'])
             ->where('guru_id', auth()->id())
             ->get();
-        
+
         return view('guru.absensi.index', compact('jadwals'));
     }
 
@@ -24,7 +25,7 @@ class AbsensiController extends Controller
     {
         $lastPertemuan = $jadwal->pertemuans()->latest('pertemuan_ke')->first();
         $pertemuanKe = $lastPertemuan ? $lastPertemuan->pertemuan_ke + 1 : 1;
-        
+
         return view('guru.absensi.create-pertemuan', compact('jadwal', 'pertemuanKe'));
     }
 
@@ -39,7 +40,7 @@ class AbsensiController extends Controller
         ]);
 
         $validated['jadwal_id'] = $jadwal->id;
-        
+
         $pertemuan = Pertemuan::create($validated);
 
         // Auto create absensi untuk semua siswa di kelas
@@ -92,61 +93,217 @@ class AbsensiController extends Controller
     public function laporanHarian(Request $request)
     {
         $tanggal = $request->input('tanggal', date('Y-m-d'));
-        
-        $pertemuans = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis'])
-            ->whereHas('jadwal', function($q) {
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
                 $q->where('guru_id', auth()->id());
             })
-            ->whereDate('tanggal', $tanggal)
-            ->get();
+            ->whereDate('tanggal', $tanggal);
 
-        return view('guru.laporan.harian', compact('pertemuans', 'tanggal'));
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
+
+        // Ambil daftar kelas untuk filter
+        $kelas_list = \App\Models\Kelas::whereHas('jadwals', function ($q) {
+            $q->where('guru_id', auth()->id());
+        })->get();
+
+        return view('guru.laporan.harian', compact('pertemuans', 'tanggal', 'kelas_list', 'kelas_id'));
+    }
+
+    public function exportPdfHarian(Request $request)
+    {
+        $tanggal = $request->input('tanggal', date('Y-m-d'));
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
+                $q->where('guru_id', auth()->id());
+            })
+            ->whereDate('tanggal', $tanggal);
+
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
+        $kelas = $kelas_id ? \App\Models\Kelas::find($kelas_id) : null;
+
+        $pdf = Pdf::loadView('guru.laporan.pdf.harian', [
+            'pertemuans' => $pertemuans,
+            'tanggal' => $tanggal,
+            'kelas' => $kelas,
+            'guru' => auth()->user()
+        ]);
+
+        $filename = 'Laporan_Harian_' . date('Y-m-d', strtotime($tanggal));
+        if ($kelas) {
+            $filename .= '_' . str_replace(' ', '_', $kelas->nama_kelas);
+        }
+        $filename .= '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function laporanBulanan(Request $request)
     {
         $bulan = $request->input('bulan', date('m'));
         $tahun = $request->input('tahun', date('Y'));
-        
-        $pertemuans = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
-            ->whereHas('jadwal', function($q) {
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
                 $q->where('guru_id', auth()->id());
             })
             ->whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahun)
-            ->get();
+            ->whereYear('tanggal', $tahun);
 
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
         $rekap = $this->hitungRekap($pertemuans);
 
-        return view('guru.laporan.bulanan', compact('pertemuans', 'rekap', 'bulan', 'tahun'));
+        // Ambil daftar kelas untuk filter
+        $kelas_list = \App\Models\Kelas::whereHas('jadwals', function ($q) {
+            $q->where('guru_id', auth()->id());
+        })->get();
+
+        return view('guru.laporan.bulanan', compact('pertemuans', 'rekap', 'bulan', 'tahun', 'kelas_list', 'kelas_id'));
+    }
+
+    public function exportPdfBulanan(Request $request)
+    {
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
+                $q->where('guru_id', auth()->id());
+            })
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
+
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
+        $rekap = $this->hitungRekap($pertemuans);
+        $kelas = $kelas_id ? \App\Models\Kelas::find($kelas_id) : null;
+
+        $pdf = Pdf::loadView('guru.laporan.pdf.bulanan', [
+            'pertemuans' => $pertemuans,
+            'rekap' => $rekap,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'kelas' => $kelas,
+            'guru' => auth()->user()
+        ])->setPaper('a4', 'landscape');
+
+        $bulan_nama = \Carbon\Carbon::create()->month($bulan)->format('F');
+        $filename = 'Laporan_Bulanan_' . $bulan_nama . '_' . $tahun;
+        if ($kelas) {
+            $filename .= '_' . str_replace(' ', '_', $kelas->nama_kelas);
+        }
+        $filename .= '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function laporanSemester(Request $request)
     {
         $semester = $request->input('semester', 'ganjil');
         $tahunAjaran = $request->input('tahun_ajaran', date('Y'));
-        
-        $pertemuans = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
-            ->whereHas('jadwal', function($q) {
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
                 $q->where('guru_id', auth()->id());
             })
             ->where('semester', $semester)
-            ->where('tahun_ajaran', $tahunAjaran)
-            ->get();
+            ->where('tahun_ajaran', $tahunAjaran);
 
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
         $rekap = $this->hitungRekap($pertemuans);
 
-        return view('guru.laporan.semester', compact('pertemuans', 'rekap', 'semester', 'tahunAjaran'));
+        // Ambil daftar kelas untuk filter
+        $kelas_list = \App\Models\Kelas::whereHas('jadwals', function ($q) {
+            $q->where('guru_id', auth()->id());
+        })->get();
+
+        return view('guru.laporan.semester', compact('pertemuans', 'rekap', 'semester', 'tahunAjaran', 'kelas_list', 'kelas_id'));
+    }
+
+    public function exportPdfSemester(Request $request)
+    {
+        $semester = $request->input('semester', 'ganjil');
+        $tahunAjaran = $request->input('tahun_ajaran', date('Y'));
+        $kelas_id = $request->input('kelas_id');
+
+        $query = Pertemuan::with(['jadwal.kelas', 'jadwal.mataPelajaran', 'absensis.siswa'])
+            ->whereHas('jadwal', function ($q) {
+                $q->where('guru_id', auth()->id());
+            })
+            ->where('semester', $semester)
+            ->where('tahun_ajaran', $tahunAjaran);
+
+        if ($kelas_id) {
+            $query->whereHas('jadwal', function ($q) use ($kelas_id) {
+                $q->where('kelas_id', $kelas_id);
+            });
+        }
+
+        $pertemuans = $query->get();
+        $rekap = $this->hitungRekap($pertemuans);
+        $kelas = $kelas_id ? \App\Models\Kelas::find($kelas_id) : null;
+
+        $pdf = Pdf::loadView('guru.laporan.pdf.semester', [
+            'pertemuans' => $pertemuans,
+            'rekap' => $rekap,
+            'semester' => $semester,
+            'tahunAjaran' => $tahunAjaran,
+            'kelas' => $kelas,
+            'guru' => auth()->user()
+        ])->setPaper('a4', 'landscape');
+
+        $filename = 'Laporan_Semester_' . ucfirst($semester) . '_' . $tahunAjaran;
+        if ($kelas) {
+            $filename .= '_' . str_replace(' ', '_', $kelas->nama_kelas);
+        }
+        $filename .= '.pdf';
+
+        return $pdf->download($filename);
     }
 
     private function hitungRekap($pertemuans)
     {
         $rekap = [];
-        
+
         foreach ($pertemuans as $pertemuan) {
             foreach ($pertemuan->absensis as $absensi) {
                 $siswaId = $absensi->siswa_id;
-                
+
                 if (!isset($rekap[$siswaId])) {
                     $rekap[$siswaId] = [
                         'siswa' => $absensi->siswa,
@@ -157,7 +314,7 @@ class AbsensiController extends Controller
                         'total' => 0
                     ];
                 }
-                
+
                 $rekap[$siswaId][$absensi->status]++;
                 $rekap[$siswaId]['total']++;
             }
@@ -165,4 +322,6 @@ class AbsensiController extends Controller
 
         return $rekap;
     }
+
+
 }

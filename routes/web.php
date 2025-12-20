@@ -52,4 +52,9 @@ Route::middleware(['auth'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('laporan/harian', [AbsensiController::class, 'laporanHarian'])->name('laporan.harian');
     Route::get('laporan/bulanan', [AbsensiController::class, 'laporanBulanan'])->name('laporan.bulanan');
     Route::get('laporan/semester', [AbsensiController::class, 'laporanSemester'])->name('laporan.semester');
+
+    // export laporan pdf
+    Route::get('laporan/harian/pdf', [AbsensiController::class, 'exportPdfHarian'])->name('laporan.harian.pdf');
+    Route::get('laporan/bulanan/pdf', [AbsensiController::class, 'exportPdfBulanan'])->name('laporan.bulanan.pdf');
+    Route::get('laporan/semester/pdf', [AbsensiController::class, 'exportPdfSemester'])->name('laporan.semester.pdf');
 });

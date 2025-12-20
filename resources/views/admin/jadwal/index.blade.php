@@ -50,7 +50,9 @@
                             </td>
                             <td>{{ $jadwal->mataPelajaran->nama_mapel }}</td>
                             <td>
-                                <i class="bi bi-person-badge"></i> {{ $jadwal->guru->name }}
+                                <i class="bi bi-person-badge text-success"></i> {{ $jadwal->guru->name }}
+                                <br>
+                                <small class="text-muted">NIP:{{ $jadwal->guru->nip }}</small>
                             </td>
                             <td>
                                 <span class="badge bg-info">{{ $jadwal->hari }}</span>
