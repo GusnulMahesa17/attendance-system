@@ -26,6 +26,7 @@ class AbsensiController extends Controller
         $lastPertemuan = $jadwal->pertemuans()->latest('pertemuan_ke')->first();
         $pertemuanKe = $lastPertemuan ? $lastPertemuan->pertemuan_ke + 1 : 1;
 
+
         return view('guru.absensi.create-pertemuan', compact('jadwal', 'pertemuanKe'));
     }
 
@@ -39,13 +40,26 @@ class AbsensiController extends Controller
             'tahun_ajaran' => 'required|digits:4'
         ]);
 
-        $validated['jadwal_id'] = $jadwal->id;
+        // Cek duplikasi tanggal
+        if (Pertemuan::where('jadwal_id', $jadwal->id)->whereDate('tanggal', $validated['tanggal'])->exists()) {
+            return back()->withInput()->withErrors(['tanggal' => 'Sudah ada pertemuan pada tanggal ini!']);
+        }
 
+        // Cek duplikasi nomor pertemuan
+        if (
+            Pertemuan::where('jadwal_id', $jadwal->id)
+                ->where('semester', $validated['semester'])
+                ->where('tahun_ajaran', $validated['tahun_ajaran'])
+                ->where('pertemuan_ke', $validated['pertemuan_ke'])->exists()
+        ) {
+            return back()->withInput()->withErrors(['pertemuan_ke' => 'Nomor pertemuan ini sudah ada di semester tersebut!']);
+        }
+
+        $validated['jadwal_id'] = $jadwal->id;
         $pertemuan = Pertemuan::create($validated);
 
-        // Auto create absensi untuk semua siswa di kelas
-        $siswas = $jadwal->kelas->siswas;
-        foreach ($siswas as $siswa) {
+        // Buat absensi
+        foreach ($jadwal->kelas->siswas as $siswa) {
             Absensi::create([
                 'pertemuan_id' => $pertemuan->id,
                 'siswa_id' => $siswa->id,
