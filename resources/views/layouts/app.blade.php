@@ -104,15 +104,23 @@
                                 </li>
                             @endif
 
-                            <li class="nav-item mt-3">
+                            <li class="nav-item mt-3 bg-danger rounded">
                                 <a class="nav-link rounded" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    onclick="event.preventDefault(); confirmLogout();">
                                     <i class="bi bi-box-arrow-right"></i> Logout
                                 </a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
                             </li>
+
+                            <script>
+                                function confirmLogout() {
+                                    if (confirm('Are you sure you want to log out?')) {
+                                        document.getElementById('logout-form').submit();
+                                    }
+                                }
+                            </script>
                         </ul>
                     </div>
                 </nav>

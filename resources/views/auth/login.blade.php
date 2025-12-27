@@ -5,7 +5,7 @@
 
 <div class="container-fluid position-fixed top-50 start-50 translate-middle d-flex justify-content-center z-3 w-100 px-3">
     <div class="row justify-content-center w-100 mb-4">
-    <div class="text-center ">
+    <div class="text-center mt-3">
         <img src="{{ asset('adzikra.jpg') }}" class="rounded" alt="">
     </div>
     <h2 class="text-center mb-3 mt-3">Sistem Manajemen Absensi Siswa</h2>
@@ -81,6 +81,9 @@
                 </div>
             </div>
         </div>
-    </div>
+        <footer>
+            <p class="text-center mt-4">&copy; 2025 Adzikra. All rights reserved.</p>
+        </footer>
+    </div>  
 </div>
 @endsection
