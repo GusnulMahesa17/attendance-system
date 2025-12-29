@@ -16,7 +16,7 @@ class JadwalController extends Controller
         $jadwals = Jadwal::with(['kelas', 'mataPelajaran', 'guru'])
             ->orderBy('hari')
             ->orderBy('jam_mulai')
-            ->paginate(15);
+            ->paginate(10);
         
         return view('admin.jadwal.index', compact('jadwals'));
     }

@@ -42,7 +42,7 @@
     <div class="container-fluid">
         <div class="row">
             @auth
-                <nav class="col-md-2 d-md-block sidebar p-0 100vh">
+                <nav id="sidebarMenu" class="col-md-2 d-md-block sidebar p-0 100vh">
                     <div class="position-sticky pt-3">
                         <div class="text-center mb-4">
                             <h4 class="text-white">📚 Absensi</h4>

@@ -35,7 +35,7 @@
         </div>
 
         <div class="card shadow-sm">
-            <div class="card-body">
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
