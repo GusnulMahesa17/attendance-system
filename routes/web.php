@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\MataPelajaranController;
+use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Guru\AbsensiController;
 use App\Http\Controllers\Guru\LaporanAbsensiController;
 use App\Http\Controllers\Guru\ExportAbsensiController;
@@ -35,8 +36,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
     // Jadwal Management
-    Route::resource('jadwal', \App\Http\Controllers\Admin\JadwalController::class);
-    Route::get('jadwal/kelas/{kelas}', [\App\Http\Controllers\Admin\JadwalController::class, 'byKelas'])
+    Route::resource('jadwal', JadwalController::class);
+    Route::get('jadwal/kelas/{kelas}', [JadwalController::class, 'byKelas'])
         ->name('jadwal.by-kelas');
 });
 
