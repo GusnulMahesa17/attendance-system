@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
+use App\Http\Requests\GuruRequest;
 
 class GuruController extends Controller
 {
@@ -20,18 +21,9 @@ class GuruController extends Controller
         return view('admin.guru.create');
     }
 
-    public function store(Request $request)
+    public function store(GuruRequest $request)
     {
-        $validated = $request->validate
-        (
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'nip' => 'required|unique:users,nip',
-                'phone' => 'nullable|string',
-                'password' => 'required|min:6'
-            ]
-        );
+        $validated = $request->validated();
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['role'] = 'guru';
@@ -46,18 +38,9 @@ class GuruController extends Controller
         return view('admin.guru.edit', compact('guru'));
     }
 
-    public function update(Request $request, User $guru)
+    public function update(GuruRequest $request, User $guru)
     {
-        $validated = $request->validate
-        (
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|unique:users,email,' . $guru->id,
-                'nip' => 'required|unique:users,nip,' . $guru->id,
-                'phone' => 'nullable|string|max:15',
-                'password' => 'nullable|min:6'
-            ]
-        );
+        $validated = $request->validated();
 
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($validated['password']);

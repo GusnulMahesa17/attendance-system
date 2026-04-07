@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use App\Http\Requests\SiswaRequest;
 
 class KelasController extends Controller
 {
@@ -69,18 +70,9 @@ class KelasController extends Controller
     }
 
     // Manage siswa dalam kelas
-    public function addSiswa(Request $request, Kelas $kelas)
+    public function addSiswa(SiswaRequest $request, Kelas $kelas)
     {
-        $validated = $request->validate([
-            'kelas_id' => 'exists:kelas,id',
-            'nis' => 'required|unique:siswas,nis',
-            'nama' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|in:L,P',
-            'tempat_lahir' => 'nullable|string',
-            'tanggal_lahir' => 'nullable|date',
-            'alamat' => 'nullable|string',
-            'phone' => 'nullable|string'
-        ]);
+        $validated = $request->validated();
 
         $validated['kelas_id'] = $kelas->id;
         Siswa::create($validated);
@@ -89,18 +81,9 @@ class KelasController extends Controller
             ->with('success', 'Siswa berhasil ditambahkan');
     }
 
-    public function updateSiswa(Request $request, Kelas $kelas, Siswa $siswa)
+    public function updateSiswa(SiswaRequest $request, Kelas $kelas, Siswa $siswa)
     {
-        $validated = $request->validate([
-            'nis' => 'required|unique:siswas,nis,' . $siswa->id,
-            'nama' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|in:L,P',
-            'tempat_lahir' => 'nullable|string',
-            'tanggal_lahir' => 'nullable|date',
-            'alamat' => 'nullable|string',
-            'phone' => 'nullable|string'
-        ]);
-
+        $validated = $request->validated();
         $siswa->update($validated);
 
         return redirect()->route('admin.kelas.show', $kelas)

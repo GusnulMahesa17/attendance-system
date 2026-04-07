@@ -318,7 +318,7 @@
         }
 
         .content-wrapper {
-            padding: 2rem;
+            padding: 1.5rem;
             max-width: 100%;
         }
 
