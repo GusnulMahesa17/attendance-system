@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use DB;
 use Hash;
-use Illuminate\Http\Request;
 use App\Http\Requests\GuruRequest;
 
 class GuruController extends Controller
@@ -25,12 +25,23 @@ class GuruController extends Controller
     {
         $validated = $request->validated();
 
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = 'guru';
+        DB::beginTransaction();
 
-        User::create($validated);
+        try {
+            //code...
+            $validated['password'] = Hash::make($validated['password']);
+            $validated['role'] = 'guru';
 
-        return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil ditambahkan.');
+            User::create($validated);
+
+            DB::commit();
+
+            return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil ditambahkan.');
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Gagal menambahkan data guru: ' . $th->getMessage());
+        }
     }
 
     public function edit(User $guru)
@@ -42,15 +53,25 @@ class GuruController extends Controller
     {
         $validated = $request->validated();
 
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+        DB::beginTransaction();
+
+        try {
+            //code...
+            if ($request->filled('password')) {
+                $validated['password'] = Hash::make($validated['password']);
+            } else {
+                unset($validated['password']);
+            }
+
+            $guru->update($validated);
+            DB::commit();
+
+            return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil diperbarui.');
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Gagal memperbarui data guru: ' . $th->getMessage());
         }
-
-        $guru->update($validated);
-
-        return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil diperbarui.');
     }
 
     public function destroy(User $guru)
