@@ -69,7 +69,6 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
                                             <a href="{{ route('admin.mapel.edit', $mapel) }}" class="btn btn-warning" 
                                                 title="Edit">
                                                 <i class="bi bi-pencil"></i>
@@ -83,7 +82,6 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
-                                        </div>
                                     </td>
                                 </tr>
                             @empty

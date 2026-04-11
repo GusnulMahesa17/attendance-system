@@ -72,19 +72,17 @@
                                         {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}
                                     </td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('admin.jadwal.edit', $jadwal) }}" class="btn btn-warning">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <form action="{{ route('admin.jadwal.destroy', $jadwal) }}" method="POST"
-                                                class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <a href="{{ route('admin.jadwal.edit', $jadwal) }}" class="btn btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('admin.jadwal.destroy', $jadwal) }}" method="POST"
+                                            class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty
