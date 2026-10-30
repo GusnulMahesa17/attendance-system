@@ -251,7 +251,7 @@
                     </button>
                 </form>
 
-                <div class="login-footer">Copyright &copy; {{ date('Y') }} Adzikra. All rights reserved.</div>
+                <div class="login-footer">&copy; {{ date('Y') }} Adzikra. All rights reserved.</div>
             </div>
         </main>
     </div>
